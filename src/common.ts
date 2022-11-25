@@ -18,9 +18,9 @@ export const plist = `
   <key>StartCalendarInterval</key>
   <dict>
     <key>Minute</key>
-    <integer>38</integer>
+    <integer>00</integer>
     <key>Hour</key>
-    <integer>17</integer>
+    <integer>21</integer>
   </dict>
   <key>StandardErrorPath</key>
   <string>${process.cwd()}/stderr.log</string>  
