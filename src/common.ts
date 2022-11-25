@@ -26,6 +26,11 @@ export const plist = `
   <string>${process.cwd()}/stderr.log</string>  
   <key>StandardOutPath</key>
   <string>${process.cwd()}/stdout.log</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string><![CDATA[${process.env.PATH}]]></string>
+  </dict>
  </dict>
 </plist>
 `.trim();
