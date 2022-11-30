@@ -9,4 +9,5 @@ Designed for Mac OS only
 1. Clone project to any dir, e.g. home: `git clone https://github.com/dziamid/minecraft-screentime`
 2. Install NodeJS 14+: `brew install node`
 3. Install dependencies: `npm install`
-4. Create launchd job (this will create a launchd file): `npm run launchd`
+4. Adjust allowed timeframe in 
+5. Create launchd job (this will create a launchd file): `npm run launchd`

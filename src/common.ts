@@ -15,13 +15,8 @@ export const plist = `
     <string>/usr/local/bin/npm</string>
     <string>start</string>
   </array>
-  <key>StartCalendarInterval</key>
-  <dict>
-    <key>Minute</key>
-    <integer>00</integer>
-    <key>Hour</key>
-    <integer>21</integer>
-  </dict>
+  <key>StartInterval</key>
+  <integer>15</integer>
   <key>StandardErrorPath</key>
   <string>${process.cwd()}/stderr.log</string>  
   <key>StandardOutPath</key>

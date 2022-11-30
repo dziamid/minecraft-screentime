@@ -2,6 +2,11 @@ import {execSync} from "child_process";
 import psList from 'ps-list';
 
 const run = async () => {
+    const downtime = true; // todo: calc based on time now
+    if (!downtime) {
+        console.log(`Skipping kill as it is not downtime`);
+        return;
+    }
     const list = await psList();
     const processes = list.filter(l => /minecraft/i.test(l.cmd || '')).filter(l => !/minecraft-screentime/i.test(l.cmd || ''));
     const pids = processes.map(p => p.pid);
