@@ -1,5 +1,7 @@
 import fetch from "node-fetch";
 import { addDays, isAfter, isWithinInterval, set } from "date-fns";
+import { ProcessDescriptor } from "ps-list";
+import { execSync } from "child_process";
 
 export type TimeInterval = { from: string; to: string }; // {from: '21:00', to: '07:00'}
 
@@ -31,4 +33,18 @@ export function isDowntimeTime(downtimeInterval: TimeInterval, now: Date): boole
   const end = isAfter(start, _end) ? addDays(_end, 1) : _end;
 
   return isWithinInterval(now, { start, end });
+}
+
+export function killProcesses(processes: ProcessDescriptor[]) {
+  const pids = processes.map((p) => p.pid);
+  const names = processes.map((p) => p.name);
+  if (pids.length === 0) {
+    console.log(`No processes to kill, exiting`);
+    return;
+  }
+
+  const killCommand = pids.map((pid) => `kill ${pid}`).join(";");
+  console.log(`Running: "${killCommand}"`);
+  execSync(killCommand);
+  console.log(`Killed: ${names.join(", ")}`);
 }
