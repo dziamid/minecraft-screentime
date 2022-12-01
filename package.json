@@ -6,7 +6,8 @@
   "scripts": {
     "plist:load": "ts-node src/plist/load.ts",
     "plist:test": "ts-node src/plist/test.ts",
-    "start": "ts-node src/index.ts"
+    "start": "ts-node src/index.ts",
+    "test": "jest --runInBand"
   },
   "dependencies": {
     "@tsconfig/node18": "~1.0.1",
