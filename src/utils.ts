@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import { addDays, isAfter, isWithinInterval, set } from "date-fns";
-import { ProcessDescriptor } from "ps-list";
+import psList, { ProcessDescriptor } from "ps-list";
 import { execSync } from "child_process";
 
 export type TimeInterval = { from: string; to: string }; // {from: '21:00', to: '07:00'}
@@ -25,14 +25,26 @@ export async function fetchDowntime() {
  *
  */
 export function isDowntimeTime(downtimeInterval: TimeInterval, now: Date): boolean {
-  const { from: startTime, to: endTime } = downtimeInterval;
-  const [startHour, startMin] = startTime.split(":").map(Number);
-  const [endHour, endMin] = endTime.split(":").map(Number);
-  const start = set(new Date(), { hours: startHour, minutes: startMin, seconds: 0 });
-  const _end = set(new Date(), { hours: endHour, minutes: endMin, seconds: 0 });
-  const end = isAfter(start, _end) ? addDays(_end, 1) : _end;
+  const { start, end } = parseDowntimeInterval(downtimeInterval);
 
   return isWithinInterval(now, { start, end });
+}
+
+export function getMinutesBeforeDowntime(downtimeInterval: TimeInterval, now: Date): number {
+  const { start } = parseDowntimeInterval(downtimeInterval);
+
+  const diff = start.getTime() - now.getTime();
+
+  return Math.floor(diff / 1000 / 60);
+}
+
+export async function killMinecraft() {
+  const list = await psList();
+  const processes = list
+    .filter((l) => /minecraft/i.test(l.cmd || ""))
+    .filter((l) => !/minecraft-screentime/i.test(l.cmd || ""));
+
+  killProcesses(processes);
 }
 
 export function killProcesses(processes: ProcessDescriptor[]) {
@@ -47,4 +59,15 @@ export function killProcesses(processes: ProcessDescriptor[]) {
   console.log(`Running: "${killCommand}"`);
   execSync(killCommand);
   console.log(`Killed: ${names.join(", ")}`);
+}
+
+function parseDowntimeInterval(downtimeInterval: TimeInterval) {
+  const { from: startTime, to: endTime } = downtimeInterval;
+  const [startHour, startMin] = startTime.split(":").map(Number);
+  const [endHour, endMin] = endTime.split(":").map(Number);
+  const start = set(new Date(), { hours: startHour, minutes: startMin, seconds: 0 });
+  const _end = set(new Date(), { hours: endHour, minutes: endMin, seconds: 0 });
+  const end = isAfter(start, _end) ? addDays(_end, 1) : _end;
+
+  return { start, end };
 }

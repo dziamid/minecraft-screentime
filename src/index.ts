@@ -1,27 +1,33 @@
-import psList from "ps-list";
 import { config } from "dotenv";
-import { fetchDowntime, isDowntimeTime, killProcesses } from "./utils";
+import { fetchDowntime, getMinutesBeforeDowntime, isDowntimeTime, killMinecraft } from "./utils";
+import { execSync } from "child_process";
 
 config();
 
 const run = async () => {
   const downtime = await fetchDowntime();
-  console.log(`Downtime: ${JSON.stringify(downtime)}`);
+  console.log(`Downtime: `);
   const now = new Date();
   const isDowntime = isDowntimeTime(downtime, now);
+  const isPlaytime = !isDowntime;
+  console.log(`Now: ${now}, downtime settings: ${JSON.stringify(downtime)}, isDowntime: ${isDowntime}`);
 
-  if (!isDowntime) {
-    console.log(`It's ok to play Minecraft`);
-    return;
+
+
+  if (isPlaytime) {
+    const mins = getMinutesBeforeDowntime(downtime, now);
+    console.log(`Playtime, ${mins} minutes left to play minecraft`);
+    if (mins <= 5) {
+      execSync(`say 'You have ${mins} minutes left to play minecraft'`);
+    }
+
+    console.log(`Not downtime, exiting!`);
   }
 
-  const list = await psList();
-  const processes = list
-    .filter((l) => /minecraft/i.test(l.cmd || ""))
-    .filter((l) => !/minecraft-screentime/i.test(l.cmd || ""));
-  
-  killProcesses(processes);
+  if (isDowntime) {
+    console.log(`Downtime, killing minecraft`);
+    await killMinecraft();
+  }
 };
 
 run().catch((e) => console.error(e));
-

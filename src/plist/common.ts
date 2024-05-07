@@ -16,7 +16,7 @@ export const plist = `
     <string>start</string>
   </array>
   <key>StartInterval</key>
-  <integer>15</integer>
+  <integer>60</integer>
   <key>StandardErrorPath</key>
   <string>${process.cwd()}/stderr.log</string>  
   <key>StandardOutPath</key>
