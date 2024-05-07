@@ -1,5 +1,11 @@
 import { config } from "dotenv";
-import { fetchDowntime, getMinutesBeforeDowntime, isDowntimeTime, killMinecraft } from "./utils";
+import {
+  fetchDowntime,
+  getMinutesBeforeDowntime,
+  isDowntimeTime,
+  isMineCraftRunning,
+  killMinecraft,
+} from "./utils";
 import { execSync } from "child_process";
 
 config();
@@ -10,18 +16,14 @@ const run = async () => {
   const now = new Date();
   const isDowntime = isDowntimeTime(downtime, now);
   const isPlaytime = !isDowntime;
-  console.log(`Now: ${now}, downtime settings: ${JSON.stringify(downtime)}, isDowntime: ${isDowntime}`);
+  console.log(`isPlaytime: ${isPlaytime}, isDowntime: ${isDowntime}, now: ${now}`);
 
-
-
-  if (isPlaytime) {
+  if (isPlaytime && (await isMineCraftRunning())) {
     const mins = getMinutesBeforeDowntime(downtime, now);
     console.log(`Playtime, ${mins} minutes left to play minecraft`);
     if (mins <= 5) {
       execSync(`say 'You have ${mins} minutes left to play minecraft'`);
     }
-
-    console.log(`Not downtime, exiting!`);
   }
 
   if (isDowntime) {

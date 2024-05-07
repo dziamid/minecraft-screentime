@@ -39,12 +39,20 @@ export function getMinutesBeforeDowntime(downtimeInterval: TimeInterval, now: Da
 }
 
 export async function killMinecraft() {
+  killProcesses(await getMinecraftProcesses());
+}
+
+export async function getMinecraftProcesses() {
   const list = await psList();
   const processes = list
     .filter((l) => /minecraft/i.test(l.cmd || ""))
     .filter((l) => !/minecraft-screentime/i.test(l.cmd || ""));
 
-  killProcesses(processes);
+  return processes;
+}
+
+export async function isMineCraftRunning() {
+  return (await getMinecraftProcesses()).length > 0;
 }
 
 export function killProcesses(processes: ProcessDescriptor[]) {
